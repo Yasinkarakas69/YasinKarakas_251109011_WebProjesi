@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Girişi - Gedik Food</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!--Burası anasayfamız ile aynı yapıda-->
+    <div class="y-menu">
+        <div class="y-logo-yeri">
+            <img src="images/gedik_logo.png" alt="Gedik Food Logo" class="y-menu-logo">
+            <span class="y-site-ismi">Gedik Food</span>      
+        </div>
+        <div class="y-linkler">
+            <a href="index.html" class="y-menu-link">Anasayfa</a>
+            <a href="menu.html" class="y-menu-link">Menümüz</a>
+            <a href="iletisim.html" class="y-menu-link">İletişim</a>
+            <a href="hakkimizda.html" class="y-menu-link">Hakkımızda</a>
+            <a href="giris.html" class="y-menu-link">Giriş Yap</a>
+        </div>
+    </div>
+    <!--Kullanıcı giriş kısmıımız buradadır-->
+    <div class="y-ana-icerik y-form-kutusu">
+        <h2 class="y-bolum-basligi">Kullanıcı Girişi</h2>
+        
+        <form id="y-giris-formu">
+            <label class="y-form-etiketi">Kullanıcı Adı:</label>
+            <input type="text" id="kullaniciAdi" class="y-form-elemani" placeholder="Kullanıcı adınızı girin" required><br>
+
+            <label class="y-form-etiketi">Şifre:</label>
+            <input type="password" id="sifre" class="y-form-elemani" placeholder="Şifrenizi girin" required><br>
+
+            <button type="submit" class="y-buton y-tam-genislik-buton">GİRİŞ YAP</button>
+        </form>
+        
+        <p id="y-giris-mesaj" class="y-hata-mesaji"></p>
+        
+        <p class="y-kayit-yonlendirme">Hesabınız yok mu? <a href="kayit.html" class="y-turuncu-link">Buradan Kayıt Olun</a></p>
+    </div>
+    <!--Kullanıcı giriş sorgusu buradadır-->
+    <script>
+        document.getElementById('y-giris-formu').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+
+            var kullaniciAdi = document.getElementById('kullaniciAdi').value;
+            var sifre = document.getElementById('sifre').value;
+
+            var response = await fetch('/api/251109011/giris', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ kullaniciAdi: kullaniciAdi, sifre: sifre })
+            });
+
+            var data = await response.json();
+
+            if (data.basarili) {
+                if (data.isAdmin) {
+                    window.location.href = "admin.html"; 
+                } else {
+                    window.location.href = "index.html"; 
+                }
+            } else {
+                document.getElementById('y-giris-mesaj').innerText = data.mesaj;
+            }
+        });
+    </script>
+</body>
+</html>

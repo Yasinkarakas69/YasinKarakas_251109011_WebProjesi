@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli - Gedik Food</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!--Burası anasayfamız ile aynı yapıda-->
+    <div class="y-menu y-admin-menu">
+        <div class="y-logo-yeri">
+            <span class="y-site-ismi y-admin-baslik">Yönetim Paneli</span>      
+        </div>
+        <!--Ana menüye dönmek için bu kısmı kullanıyoruz-->
+        <div class="y-linkler">
+            <a href="index.html" class="y-menu-link">Siteye Dön</a>
+        </div>
+    </div>
+       <!--Ürünleri Kategorilerine göre buradan ekliyoruz-->
+       <div class="y-ana-icerik">
+        <h2 class="y-bolum-basligi">Yeni Ürün Ekle</h2>
+        <form id="y-yemek-ekleme-formu">
+            <input type="text" id="yemekIsim" class="y-form-elemani" placeholder="Ürün İsmi (Örn: Gedik Burger)" required>
+            
+            <select id="yemekKategori" class="y-form-elemani" required>
+                <option value="">Kategori Seçiniz</option>
+                <option value="Ana Yemek">Ana Yemek</option>
+                <option value="Tatlı">Tatlı</option>
+                <option value="İçecek">İçecek</option>
+            </select>
+            <!--Fiyat ve resim kısmını buradan ekliyoruz-->
+        <input type="text" id="yemekIcerik" class="y-form-elemani" placeholder="İçindekiler / Açıklama" required>
+            <input type="number" id="yemekFiyat" class="y-form-elemani" placeholder="Fiyat (TL)" required>
+            <input type="text" id="yemekGorsel" class="y-form-elemani" placeholder="Resim Yolu (Örn: images/gedik_burger.png)" required>
+            <button type="submit" class="y-buton">SİSTEME EKLE</button>
+        </form>
+        <!--Mevcut menüleri burdan görüyoruz-->
+        <h2 class="y-bolum-basligi y-tablo-ust-bosluk">Mevcut Menü</h2>
+        <table class="y-fiyat-tablosu" id="y-admin-tablosu">
+            <tr>
+                <th>Kategori</th>
+                <th>Ürün İsmi</th>
+                <th>Fiyat</th>
+                <th>İşlem</th>
+            </tr>
+        </table>
+        <!--Gelen Siparişler buradan gözüküyor-->
+        <h2 class="y-bolum-basligi y-tablo-ust-bosluk">Gelen Siparişler</h2>
+        <table class="y-fiyat-tablosu" id="y-siparis-tablosu">
+            <tr>
+                <th>Müşteri Adı</th>
+                <th>Sipariş Detayı</th>
+                <th>Porsiyon</th>
+                <th>Tarih</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+    let guncellenecekId = null;
+
+        // Sunucudan yemekler verisini çekmek için REST API isteği gönderiliyor
+        async function yemekleriGetir() {
+            var response = await fetch('/api/251109011/yemekler');
+            var yemekler = await response.json();
+            var tablo = document.getElementById('y-admin-tablosu');
+            
+            tablo.innerHTML = '<tr><th>Kategori</th><th>Ürün İsmi</th><th>Fiyat</th><th>İşlem</th></tr>';
+
+            yemekler.forEach(function(yemek) {
+                tablo.innerHTML += '<tr>' +
+                    '<td><strong>' + yemek.kategori + '</strong></td>' +
+                    '<td>' + yemek.isim + '</td>' +
+                    '<td>' + yemek.fiyat + ' TL</td>' +
+                    '<td>' +
+                    '<button onclick="yemekDuzenle(\'' + yemek._id + '\', \'' + yemek.isim + '\', \'' + yemek.kategori + '\', \'' + yemek.icerik + '\', ' + yemek.fiyat + ', \'' + yemek.gorselUrl + '\')" class="y-duzenle-butonu">Düzenle</button>' +
+                    '<button onclick="yemekSil(\'' + yemek._id + '\')" class="y-sil-butonu">Sil</button>' +
+                    '</td>' +
+                '</tr>';
+            });
+        }
+
+        // Düzenle butonuna basılınca form alanlarını seçilen yemeğin bilgileriyle doldurur
+        function yemekDuzenle(id, isim, kategori, icerik, fiyat, gorsel) {
+            guncellenecekId = id; // Sistemi güncelleme moduna sokar
+            document.getElementById('yemekIsim').value = isim;
+            document.getElementById('yemekKategori').value = kategori;
+            document.getElementById('yemekIcerik').value = icerik;
+            document.getElementById('yemekFiyat').value = fiyat;
+            document.getElementById('yemekGorsel').value = gorsel;
+            
+            // Butonun yazısını değiştirir
+            document.querySelector('#y-yemek-ekleme-formu .y-buton').innerText = "ÜRÜNÜ GÜNCELLE";
+        }
+
+        // Admin panelinden gelen form isteğini sunucuya POST (Ekleme) veya PUT (Güncelleme) olarak gönderir
+        document.getElementById('y-yemek-ekleme-formu').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            var isim = document.getElementById('yemekIsim').value;
+            var kategori = document.getElementById('yemekKategori').value;
+            var icerik = document.getElementById('yemekIcerik').value;
+            var fiyat = document.getElementById('yemekFiyat').value;
+            var gorselUrl = document.getElementById('yemekGorsel').value; 
+
+            if (guncellenecekId) {
+                // Güncelleme Modu (PUT İsteği)
+                await fetch('/api/251109011/yemekler/' + guncellenecekId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isim: isim, kategori: kategori, icerik: icerik, fiyat: fiyat, gorselUrl: gorselUrl })
+                });
+                alert("Ürün başarıyla güncellendi!");
+                guncellenecekId = null;
+                document.querySelector('#y-yemek-ekleme-formu .y-buton').innerText = "SİSTEME EKLE"; // Butonu eski haline getir
+            } else {
+                // Yeni ekleme modu (POST İsteği)
+                await fetch('/api/251109011/yemekler', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isim: isim, kategori: kategori, icerik: icerik, fiyat: fiyat, gorselUrl: gorselUrl })
+                });
+                alert("Ürün başarıyla eklendi!");
+            }
+
+            document.getElementById('y-yemek-ekleme-formu').reset();
+            yemekleriGetir(); 
+        });
+
+        async function yemekSil(id) {
+            if(confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
+                await fetch('/api/251109011/yemekler/' + id, { method: 'DELETE' });
+                alert("Ürün silindi!");
+                yemekleriGetir(); 
+            }
+        }
+
+        yemekleriGetir();
+
+        // Populate kodunu kullanmak çok zor..
+        async function siparisleriGetir() {
+            var response = await fetch('/api/251109011/admin/siparisler');
+            var siparisler = await response.json();
+            var tablo = document.getElementById('y-siparis-tablosu');
+            
+            tablo.innerHTML = '<tr><th>Müşteri Adı</th><th>Sipariş Detayı</th><th>Porsiyon</th><th>Tarih</th></tr>';
+
+            siparisler.forEach(function(siparis) {
+                var detay = "";
+                if (siparis.anaYemek) detay += "🍲 " + siparis.anaYemek.isim + " (" + siparis.anaYemek.fiyat + " TL)<br>";
+                if (siparis.tatli) detay += "🍰 " + siparis.tatli.isim + " (" + siparis.tatli.fiyat + " TL)<br>";
+                if (siparis.icecek) detay += "🥤 " + siparis.icecek.isim + " (" + siparis.icecek.fiyat + " TL)<br>";
+
+                // Tarihi Türkiye saatine göre düzenler
+                var tarihStr = new Date(siparis.tarih).toLocaleString('tr-TR');
+
+                tablo.innerHTML += '<tr>' +
+                    '<td><strong>' + siparis.musteriAdi + '</strong></td>' +
+                    '<td>' + detay + '</td>' +
+                    '<td>' + siparis.porsiyon + '</td>' +
+                    '<td>' + tarihStr + '</td>' +
+                '</tr>';
+            });
+        }
+
+        // Sayfa yüklendiğinde hem menüyü hem de siparişleri getirir
+        siparisleriGetir();
+    </script>
+</body>
+</html>

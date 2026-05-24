@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gedik Food</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!--Burası sitemizin ana menüsü-->
+    <div class="y-menu">
+    <!--Burası sitemizin üst kısmının bulunduğu yer-->
+    <div class="y-logo-yeri">
+            <img src="images/gedik_logo.png" alt="Gedik Food Logo" class="y-menu-logo">
+            <span class="y-site-ismi">Gedik Food</span>      
+        </div>
+    <!--Burası üst menüdeki linklerin bulunduğu yer-->
+    <div class="y-linkler">
+            <a href="index.html" class="y-menu-link">Anasayfa</a>
+            <a href="menu.html" class="y-menu-link">Menümüz</a>
+            <a href="iletisim.html" class="y-menu-link">İletişim</a>
+            <a href="hakkimizda.html" class="y-menu-link">Hakkımızda</a>
+            <a href="giris.html" class="y-menu-link">Giriş Yap</a>
+       </div>
+    </div>
+    
+    <!--Ana büyük görselimiz buradadır-->
+     <div class="y-kapak-alani">
+        <img src="images/buyuk_kapak.png" alt="Gedik Food Ana Görsel" class="y-kapak-resmi">
+        <h1 class="y-kapak-yazisi">GEDİK FOOD'A HOŞGELDİNİZ</h1>
+    </div>
+    <!--Sipariş verme kısmımız buradadır-->
+    <div class="y-ana-icerik y-index-siparis-kutusu">
+        <h2 class="y-bolum-basligi">Hemen Sipariş Verin</h2>
+        <p>Tüm ürünlerimizi görmek için yukarıdan <strong>Menümüz</strong> sayfasına göz atabilirsiniz.</p>
+
+        <form id="y-siparis-formu" class="y-index-siparis-formu">
+            <label>Adınız Soyadınız:</label><br>
+            <input type="text" id="siparisMusteri" class="y-form-elemani" placeholder="Adınız Soyadınız" required><br>
+            
+            <label>Ana Yemek:</label><br>
+            <select class="y-form-elemani" id="y-yemek-secimi">
+                <option value="">Yükleniyor...</option>
+            </select><br>
+
+            <label>Tatlı:</label><br>
+            <select class="y-form-elemani" id="y-tatli-secimi">
+                <option value="">Yükleniyor...</option>
+            </select><br>
+
+            <label>İçecek:</label><br>
+            <select class="y-form-elemani" id="y-icecek-secimi">
+                <option value="">Yükleniyor...</option>
+            </select><br>
+
+            <p class="y-porsiyon-baslik">Porsiyon Seçimi (Ana Yemek İçin):</p>
+            <input type="radio" name="porsiyon" value="Küçük"> Küçük 
+            <input type="radio" name="porsiyon" value="Normal" checked> Normal 
+            <input type="radio" name="porsiyon" value="Büyük"> Büyük (+40 TL)<br><br>
+            
+            <button type="submit" class="y-buton y-tam-genislik-buton">SİPARİŞİ ONAYLA</button>
+        </form>
+    </div>
+
+    <script>
+        // Burada öğrenci numarama özel apiden verileri çekip kategorilerine göre gruplandırıldı
+        async function siparisKutulariniDoldur() {
+            var response = await fetch('/api/251109011/yemekler');
+            var yemekler = await response.json();
+            
+            var yemekKutusu = document.getElementById('y-yemek-secimi');
+            var tatliKutusu = document.getElementById('y-tatli-secimi');
+            var icecekKutusu = document.getElementById('y-icecek-secimi');
+            
+            yemekKutusu.innerHTML = '<option value="">Lütfen Ana Yemek Seçiniz...</option>';
+            tatliKutusu.innerHTML = '<option value="">Tatlı İstemiyorum</option>';
+            icecekKutusu.innerHTML = '<option value="">İçecek İstemiyorum</option>';
+
+            // Gelen verileri döngüye sokup kategorilerine göre kutulara atıyoruz
+            yemekler.forEach(function(yemek) {
+                var secenek = '<option value="' + yemek._id + '">' + yemek.isim + ' (' + yemek.fiyat + ' TL)</option>';
+                
+                if(yemek.kategori === 'Ana Yemek') {
+                    yemekKutusu.innerHTML += secenek;
+                } else if(yemek.kategori === 'Tatlı') {
+                    tatliKutusu.innerHTML += secenek;
+                } else if(yemek.kategori === 'İçecek') {
+                    icecekKutusu.innerHTML += secenek;
+                }
+            });
+        }
+
+        siparisKutulariniDoldur();
+
+        // Siparişi veritabanına gönderiyoruz (en çok zorlayan kısım oldu)
+        document.getElementById('y-siparis-formu').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            var musteriAdi = document.getElementById('siparisMusteri').value;
+            var anaYemek = document.getElementById('y-yemek-secimi').value;
+            var tatli = document.getElementById('y-tatli-secimi').value;
+            var icecek = document.getElementById('y-icecek-secimi').value;
+            var porsiyon = document.querySelector('input[name="porsiyon"]:checked').value;
+
+            if(!anaYemek && !tatli && !icecek) {
+                alert("Lütfen en az bir ürün seçiniz!");
+                return;
+            }
+
+            var response = await fetch('/api/251109011/siparisler', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    musteriAdi: musteriAdi, 
+                    anaYemek: anaYemek, 
+                    tatli: tatli, 
+                    icecek: icecek, 
+                    porsiyon: porsiyon 
+                })
+            });
+
+            var data = await response.json();
+            
+            if(data.basarili) {
+                alert(data.mesaj); 
+                document.getElementById('y-siparis-formu').reset(); 
+            }
+        });
+    </script>
+</body>
+</html>

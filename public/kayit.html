@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - Gedik Food</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!--Burası anasayfamız ile aynı yapıda-->
+    <div class="y-menu">
+        <div class="y-logo-yeri">
+            <img src="images/gedik_logo.png" alt="Gedik Food Logo" class="y-menu-logo">
+            <span class="y-site-ismi">Gedik Food</span>      
+        </div>
+        <div class="y-linkler">
+            <a href="index.html" class="y-menu-link">Anasayfa</a>
+            <a href="menu.html" class="y-menu-link">Menümüz</a>
+            <a href="iletisim.html" class="y-menu-link">İletişim</a>
+            <a href="hakkimizda.html" class="y-menu-link">Hakkımızda</a>
+            <a href="giris.html" class="y-menu-link">Giriş Yap</a>
+        </div>
+    </div>
+    <!--Yeni hesap açmak için kullanıcı ve şifre bölümü buradadır-->
+     <div class="y-ana-icerik y-form-kutusu">
+        <h2 class="y-bolum-basligi">Yeni Hesap Oluştur</h2>
+        
+        <form id="y-kayit-formu">
+            <label class="y-form-etiketi">Kullanıcı Adı:</label>
+            <input type="text" id="kayitKullaniciAdi" class="y-form-elemani" placeholder="Bir kullanıcı adı belirleyin" required><br>
+
+            <label class="y-form-etiketi">Şifre:</label>
+            <input type="password" id="kayitSifre" class="y-form-elemani" placeholder="Bir şifre belirleyin" required><br>
+
+            <button type="submit" class="y-buton y-tam-genislik-buton">KAYIT OL</button>
+        </form>
+        
+        <p id="y-kayit-mesaj" class="y-bilgi-mesaji"></p>
+    </div>
+
+    <script>
+        document.getElementById('y-kayit-formu').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            var kullaniciAdi = document.getElementById('kayitKullaniciAdi').value;
+            var sifre = document.getElementById('kayitSifre').value;
+
+            var response = await fetch('/api/251109011/kayit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ kullaniciAdi: kullaniciAdi, sifre: sifre })
+            });
+
+            var data = await response.json();
+            var mesajKutusu = document.getElementById('y-kayit-mesaj');
+
+            if (data.basarili) {
+                mesajKutusu.className = "y-bilgi-mesaji y-mesaj-basarili"; 
+                mesajKutusu.innerText = data.mesaj + " Giriş sayfasına yönlendiriliyorsunuz..."; // Kayıt onaylandıktan sonra ana sayfaya yönlendiriliyoruz
+                setTimeout(function() {
+                    window.location.href = "giris.html";
+                }, 2000);
+            } else {
+                mesajKutusu.className = "y-bilgi-mesaji y-mesaj-hatali";
+                mesajKutusu.innerText = "Kayıt sırasında bir hata oluştu.";
+            }
+        });
+    </script>
+</body>
+</html>

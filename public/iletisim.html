@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim - Gedik Food</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!--Burası anasayfamız ile aynı yapıda-->
+    <div class="y-menu">
+        <div class="y-logo-yeri">
+            <img src="images/gedik_logo.png" alt="Gedik Food Logo" class="y-menu-logo">
+            <span class="y-site-ismi">Gedik Food</span>      
+        </div>
+        <div class="y-linkler">
+            <a href="index.html" class="y-menu-link">Anasayfa</a>
+            <a href="menu.html" class="y-menu-link">Menümüz</a>
+            <a href="iletisim.html" class="y-menu-link">İletişim</a>
+            <a href="hakkimizda.html" class="y-menu-link">Hakkımızda</a>
+            <a href="giris.html" class="y-menu-link">Giriş Yap</a>
+        </div>
+    </div>
+    <!--İletişim bölümündeki kapağımız burda-->
+    <div class="y-kapak-alani">
+        <img src="images/iletisim_kapak.png" alt="Bize Ulaşın" class="y-kapak-resmi">
+        <h1 class="y-kapak-yazisi">BİZE ULAŞIN</h1>
+    </div>
+    <!--İletişim ana içerik ve ikonlar bu kısımdadır-->
+    <div class="y-ana-icerik">
+
+        <h2 class="y-bolum-basligi">Adres ve Telefon</h2>
+        <p><i class="fa-solid fa-location-dot y-ikon"></i> <strong>Adres:</strong> Gedik Meslek Yüksekokulu, Pendik / İstanbul</p>
+        <p><i class="fa-solid fa-phone y-ikon"></i> <strong>Telefon:</strong> 444 5 438 -Okulun numarası-</p>
+        <p><i class="fa-solid fa-envelope y-ikon"></i> <strong>E-Posta:</strong> info.gmyo@gedik.edu.tr, yasin.karakas34@outlook.com</p>
+    <!--Sitemizin Adresi bu kısımdadır-->
+        <h2 class="y-bolum-basligi">Haritada Yerimiz</h2>
+        
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d753.8712792057621!2d29.277064069836435!3d40.90510800000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cadba9e3791463%3A0x23f17da14a54eebe!2sGedik%20Meslek%20Y%C3%BCksekokulu!5e0!3m2!1str!2str!4v1766431054412!5m2!1str!2str" 
+            width="100%" 
+            height="400" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    <!--Mesaj gönderme iletişim kurma kısmı-->
+    <h2 class="y-bolum-basligi">Bize Mesaj Gönderin</h2>
+
+        <form action="#">
+              
+            <label>Adınız Soyadınız:</label><br>
+            <input type="text" class="y-form-elemani" placeholder="Adınız Soyadınız"><br>
+
+            <label>Konu:</label><br>
+            <select class="y-form-elemani">
+                <option>Teşekkür / Memnuniyet</option>
+                <option>Şikayet</option>
+                <option>Öneri</option>
+            </select><br>
+
+            <p>Cinsiyetiniz:</p>
+            <input type="radio" name="cinsiyet" value="kadin"> Kadın &nbsp;&nbsp;
+            <input type="radio" name="cinsiyet" value="erkek"> Erkek &nbsp;&nbsp;
+            <input type="radio" name="cinsiyet" value="belirtmek" checked> Belirtmek İstemiyorum<br><br>
+
+            <label>Mesajınız:</label><br>
+            <textarea class="y-form-elemani" rows="5" placeholder="Mesajınızı buraya yazınız"></textarea><br>
+
+            <button type="submit" class="y-buton">GÖNDER</button>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

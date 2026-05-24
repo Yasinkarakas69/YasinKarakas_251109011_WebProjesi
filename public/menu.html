@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menümüz - Gedik Food</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!--Burası anasayfamız ile aynı yapıda-->
+    <div class="y-menu">
+        <div class="y-logo-yeri">
+            <img src="images/gedik_logo.png" alt="Gedik Food Logo" class="y-menu-logo">
+            <span class="y-site-ismi">Gedik Food</span>      
+        </div>
+        <div class="y-linkler">
+            <a href="index.html" class="y-menu-link">Anasayfa</a>
+            <a href="menu.html" class="y-menu-link">Menümüz</a>
+            <a href="iletisim.html" class="y-menu-link">İletişim</a>
+            <a href="hakkimizda.html" class="y-menu-link">Hakkımızda</a>
+            <a href="giris.html" class="y-menu-link">Giriş Yap</a>
+        </div>
+    </div>
+    <!--Menülerimizin detayları bu kısımdadır-->
+    <div class="y-ana-icerik" id="menu-icerik-alani">
+        </div>
+
+    <script>
+        async function kategoriliMenuOlustur() {
+            var response = await fetch('/api/251109011/yemekler');
+            var yemekler = await response.json();
+            var menuAlani = document.getElementById('menu-icerik-alani');
+            
+            var anaYemeklerHtml = '';
+            var tatlilarHtml = '';
+            var iceceklerHtml = '';
+
+            yemekler.forEach(function(yemek) {
+                var satir = '<tr>' +
+                    '<td><img src="' + yemek.gorselUrl + '" alt="' + yemek.isim + '" class="y-tablo-resmi"></td>' +
+                    '<td>' + yemek.isim + '</td>' +
+                    '<td>' + yemek.icerik + '</td>' +
+                    '<td>' + parseInt(yemek.fiyat) + ' TL</td>' +
+                '</tr>';
+
+                if (yemek.kategori === 'Ana Yemek') {
+                    anaYemeklerHtml += satir;
+                } else if (yemek.kategori === 'Tatlı') {
+                    tatlilarHtml += satir;
+                } else if (yemek.kategori === 'İçecek') {
+                    iceceklerHtml += satir;
+                }
+            });
+
+            // Ekrana basma işlemleri burda yapılmaktadır
+            if (anaYemeklerHtml !== '') {
+                menuAlani.innerHTML += '<h2 class="y-bolum-basligi">Ana Yemekler</h2>' +
+                                       '<table class="y-fiyat-tablosu"><tr><th>Görsel</th><th>Yemek İsmi</th><th>İçindekiler</th><th>Fiyat</th></tr>' + anaYemeklerHtml + '</table>';
+            }
+            if (tatlilarHtml !== '') {
+                menuAlani.innerHTML += '<h2 class="y-bolum-basligi">Tatlılar</h2>' +
+                                       '<table class="y-fiyat-tablosu"><tr><th>Görsel</th><th>Tatlı İsmi</th><th>İçindekiler</th><th>Fiyat</th></tr>' + tatlilarHtml + '</table>';
+            }
+            if (iceceklerHtml !== '') {
+                menuAlani.innerHTML += '<h2 class="y-bolum-basligi">İçecekler</h2>' +
+                                       '<table class="y-fiyat-tablosu"><tr><th>Görsel</th><th>İçecek İsmi</th><th>Açıklama</th><th>Fiyat</th></tr>' + iceceklerHtml + '</table>';
+            }
+        }
+
+        kategoriliMenuOlustur();
+    </script>
+</body>
+</html>
